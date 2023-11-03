@@ -4,6 +4,7 @@
     height: 100%;
     position: fixed;
     left: 0;
+    top: 0;
     padding-top: 85px;
     display: flex;
 }
@@ -302,11 +303,13 @@ h3 {
     padding-left: 6px;
 }
 
+.course-cards .list-group-item {
+    margin: 18px 18px 0px 18px;
+}
+
 .course-cards .dashboard-card {
     width: 260px;
     max-width: 260px;
-    height: 300px;
-    margin: 18px;
 }
 
 .dashboard-card .card-title {

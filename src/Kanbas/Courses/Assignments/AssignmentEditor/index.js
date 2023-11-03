@@ -1,47 +1,73 @@
-import React from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import db from "../../../Database";
+import { React, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+    updateAssignment,
+    addAssignment,
+} from "../assignmentsReducer";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BiSolidCheckCircle } from "react-icons/bi";
 
 function AssignmentEditor() {
-  const { assignmentId } = useParams();
-  const assignment = db.assignments.find(
-    (assignment) => assignment._id === assignmentId);
+    const { assignmentId } = useParams();
+    const assignment = useSelector((state) => state.assignmentsReducer.assignment);
+    const [editedAssignment, setEditedAssignment] = useState(assignment);
+    const dispatch = useDispatch();
 
+    const { courseId } = useParams();
+    const navigate = useNavigate();
+    const handleCancel = () => {  
+        navigate(`/Kanbas/Courses/${courseId}/Assignments`);
+    };
+    const handleSave = () => {
+        console.log("Actually saving assignment TBD in later assignments");
+        if (assignmentId == "new") {
+            dispatch(addAssignment({... editedAssignment, course: courseId}))
+        } else {
+            dispatch(updateAssignment(editedAssignment));
+        }
+        navigate(`/Kanbas/Courses/${courseId}/Assignments`);
+    };
+    return (
+        <div className="flex-col-container me-4 flex-grow-1">
+            <div className="top-buttons flex-row-container">
+                <div className="float-left flex-grow-1"></div>
+                <div className="float-end me-3 green"><BiSolidCheckCircle className="float-start mt-1 me-1" />Published</div>
+                <button className="btn btn-secondary gray flex-right"><FaEllipsisVertical className="mb-1" /></button>
+            </div>
+            <div>
+                <label for="text-field-assignment-name">Assignment Name</label>
+                <input
+                    className="form-control"
+                    id="text-field-assignment-name"
+                    placeholder="Assignment Name"
+                    value={editedAssignment.title}
+                    onChange={(e) =>
+                        setEditedAssignment({ ...editedAssignment, title: e.target.value })
+                    } /><br />
 
-  const { courseId } = useParams();
-  const navigate = useNavigate();
-  const handleSave = () => {
-    console.log("Actually saving assignment TBD in later assignments");
-    navigate(`/Kanbas/Courses/${courseId}/Assignments`);
-  };
-  return (
-    <div className="flex-col-container me-4 flex-grow-1">
-        <div className="top-buttons flex-row-container">
-            <div className="float-left flex-grow-1"></div>
-            <div className="float-end me-3 green"><BiSolidCheckCircle className="float-start mt-1 me-1"/>Published</div>
-            <button className="btn btn-secondary gray flex-right"><FaEllipsisVertical className="mb-1"/></button>
-        </div>
-        <div>
-            <label for="text-field-assignment-name">Assignment Name</label>
-            <input className="form-control" id="text-field-assignment-name" placeholder="Assignment Name" value={assignment.title}/><br/>
+                <form id="textarea">
+                    <textarea
+                        className="form-control"
+                        placeholder="Assignment Description"
+                        value={editedAssignment.description}
+                        onChange={(e) =>
+                            setEditedAssignment({ ...editedAssignment, description: e.target.value })
+                        }>
+                    </textarea>
+                </form><br />
 
-            <form id="textarea">
-                <textarea className="form-control">Assignment Description</textarea>
-            </form><br/>
-
-            <div className="row">
-                <div className="col-2"></div>
-                <div className="col-8">
-                    <div className="row mb-3 flex-row">
-                        <label for="text-field-points" className="col-sm-3 col-form-label pt-0"><p className="text-right">Points</p></label>
-                        <div className="col-sm-9 ps-0">
-                            <input className="form-control w-75" type="number" id="text-field-points" placeholder="0" value="100"/>
+                <div className="row">
+                    <div className="col-2"></div>
+                    <div className="col-8">
+                        <div className="row mb-3 flex-row">
+                            <label for="text-field-points" className="col-sm-3 col-form-label pt-0"><p className="text-right">Points</p></label>
+                            <div className="col-sm-9 ps-0">
+                                <input className="form-control w-75" type="number" id="text-field-points" placeholder="0" value="100" />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="row mb-3 flex-row">
+                        {/* <div className="row mb-3 flex-row">
                         <label for="assignment-group" className="col-sm-3 col-form-label pt-0">Assignment Group</label>
                         <div className="col-sm-9 ps-0">
                             <select id="assignment-group" className="form-select w-75">
@@ -118,49 +144,79 @@ function AssignmentEditor() {
                             <input className="form-check-input" type="checkbox" value="REQUIRE" name="peer-reviews" id="chkbox-peer-review"/>
                             <label for="chkbox-peer-review">Require Peer Reviews</label>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className="row mb-3 flex-row">
-                        <label for="assign" className="col-sm-3 col-form-label pt-0">Assign</label>
-                        <div className="col-sm-0 border border-secondary rounded w-75 p-3">
-                            <label for="assign-to">
-                                Assign To
-                            </label><br/>
-                            <input className="form-control" id="assign-to" value="Everyone"/><br/>
-    
-                            <label for="due-date">
-                                Due
-                            </label><br/>
-                            <input className="form-control" type="date" id="due-date" value="2021-01-01"/><br/>
-    
-                            <label for="available-from-date">
-                                Available from
-                            </label><br/>
-                            <input className="form-control" type="date" id="available-from-date" value="2021-01-01"/><br/>
-    
-                            <label for="until-date">
-                                Until
-                            </label><br/>
-                            <input className="form-control" type="date" id="until-date" value="2021-01-01"/><br/>
+                        <div className="row mb-3 flex-row">
+                            <label for="assign" className="col-sm-3 col-form-label pt-0">Assign</label>
+                            <div className="col-sm-0 border border-secondary rounded w-75 p-3">
+                                <label for="assign-to">
+                                    Assign To
+                                </label><br />
+                                <input className="form-control" id="assign-to" value="Everyone" /><br />
+
+                                <label for="due-date">
+                                    Due
+                                </label><br />
+                                <input
+                                    className="form-control"
+                                    type="date"
+                                    id="due-date"
+                                    value={editedAssignment.dueDate}
+                                    placeholder="2023-01-01"
+                                    onChange={(e) =>
+                                        setEditedAssignment({ ...editedAssignment, dueDate: e.target.value })
+                                    } /><br />
+
+                                <label for="available-from-date">
+                                    Available from
+                                </label><br />
+                                <input
+                                    className="form-control"
+                                    type="date"
+                                    id="available-from-date"
+                                    value={editedAssignment.availableFromDate}
+                                    placeholder="2023-01-01"
+                                    onChange={(e) =>
+                                        setEditedAssignment({ ...editedAssignment, availableFromDate: e.target.value })
+                                    } /><br />
+
+                                <label for="until-date">
+                                    Until
+                                </label><br />
+                                <input
+                                    className="form-control"
+                                    type="date"
+                                    id="until-date"
+                                    value={editedAssignment.availableUntilDate}
+                                    placeholder="2023-01-01"
+                                    onChange={(e) =>
+                                        setEditedAssignment({ ...editedAssignment, availableUntilDate: e.target.value })
+                                    } /><br />
+                            </div>
                         </div>
                     </div>
+                    <div className="col-2"></div>
                 </div>
-                <div className="col-2"></div>
+
             </div>
-            
+            <div className="flex-row-container bottom-buttons">
+                <div className="float-left flex-grow-1"></div>
+                <div className="float-right">
+                    <button
+                        onClick={handleCancel}
+                        className="btn btn-secondary gray m-1">
+                        Cancel
+                    </button>
+                </div>
+                <div className="float-right">
+                    <button
+                        onClick={handleSave}
+                        className="btn btn-danger m-1">
+                        Save
+                    </button>
+                </div>
+            </div>
         </div>
-        <div className="flex-row-container bottom-buttons">
-            <div className="float-left flex-grow-1"></div>
-            <div className="float-right">
-                <Link to={`/Kanbas/Courses/${courseId}/Assignments`} className="btn btn-secondary gray m-1">
-                    Cancel
-                </Link>
-            </div>
-            <div className="float-right">
-                <button onClick={handleSave} className="btn btn-danger m-1">Save</button>
-            </div>
-        </div>
-    </div>
-  );
+    );
 }
 export default AssignmentEditor;
