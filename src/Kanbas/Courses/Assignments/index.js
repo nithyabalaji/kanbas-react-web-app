@@ -1,11 +1,13 @@
-import React from "react";
 import '../../index.css';
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { React, useEffect } from "react";
 import {
     deleteAssignment,
     selectAssignment,
+    setAssignments
 } from "./assignmentsReducer";
+import * as client from "./client";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { AiOutlinePlus } from "react-icons/ai";
 import { LuGripVertical } from "react-icons/lu";
@@ -16,9 +18,19 @@ import { LiaEdit } from "react-icons/lia"
 
 function Assignments() {
     const { courseId } = useParams();
+      const handleDeleteAssignment = (assignmentId) => {
+        client.deleteAssignment(assignmentId).then((status) => {
+          dispatch(deleteAssignment(assignmentId));
+        });
+      };
+      useEffect(() => {
+        client.findAssignmentsForCourse(courseId)
+          .then((assignments) =>
+            dispatch(setAssignments(assignments))
+          );
+      }, [courseId]);
     const navigate = useNavigate();
     const assignments = useSelector((state) => state.assignmentsReducer.assignments);
-    const assignment = useSelector((state) => state.assignmentsReducer.assignment);
     const dispatch = useDispatch();
     const courseAssignments = assignments.filter(
         (assignment) => assignment.course === courseId
@@ -68,7 +80,7 @@ function Assignments() {
                             <HiOutlineEllipsisVertical className="float-end mt-1 me-2 gray" />
                             <button
                                 className="btn btn-danger"
-                                onClick={() => dispatch(deleteAssignment(assignment._id))}>
+                                onClick={() => handleDeleteAssignment(assignment._id)}>
                                 Delete
                             </button>
                         </li>

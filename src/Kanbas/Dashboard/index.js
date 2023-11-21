@@ -3,7 +3,7 @@ import { React } from "react";
 import { Link } from "react-router-dom";
 
 function Dashboard(
-    { courses, course, setCourse, addNewCourse,
+    { courses, course, setCourse, addCourse,
         deleteCourse, updateCourse }
 ) {
     return (
@@ -19,18 +19,22 @@ function Dashboard(
                 </div>
                 <div className="ps-24 mt-3">
                     <h5>Course</h5>
-                    <input value={course.name} className="form-control"
+                    <input value={course.name} placeholder="Course Name" className="form-control"
                         onChange={(e) => setCourse({ ...course, name: e.target.value })} />
-                    <input value={course.number} className="form-control"
+                    <input value={course.number} placeholder="Course Number" className="form-control"
                         onChange={(e) => setCourse({ ...course, number: e.target.value })} />
                     <input value={course.startDate} className="form-control" type="date"
                         onChange={(e) => setCourse({ ...course, startDate: e.target.value })} />
                     <input value={course.endDate} className="form-control" type="date"
                         onChange={(e) => setCourse({ ...course, endDate: e.target.value })} />
-                    <button className="btn btn-secondary gray me-2" onClick={addNewCourse} >
+                    <button className="btn btn-secondary gray me-2" onClick={addCourse} >
                         Add
                     </button>
-                    <button className="btn btn-danger" onClick={updateCourse} >
+                    <button className="btn btn-danger"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            updateCourse(course);
+                        }}>
                         Update
                     </button>
                 </div>
