@@ -1,10 +1,11 @@
-import { React, useState } from "react";
+import { React, useState, useEffect  } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
     updateAssignment,
-    addAssignment,
+    addAssignment
 } from "../assignmentsReducer";
+import * as client from "../client";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BiSolidCheckCircle } from "react-icons/bi";
 
@@ -16,15 +17,26 @@ function AssignmentEditor() {
 
     const { courseId } = useParams();
     const navigate = useNavigate();
-    const handleCancel = () => {  
+
+    const handleUpdateAssignment = async () => {
+        const status = await client.updateAssignment(editedAssignment);
+        dispatch(updateAssignment(editedAssignment));
+    };
+    const handleAddAssignment = () => {
+        client.createAssignment(courseId, editedAssignment).then((editedAssignment) => {
+            dispatch(addAssignment(editedAssignment));
+        });
+    };
+
+    const handleCancel = () => {
         navigate(`/Kanbas/Courses/${courseId}/Assignments`);
     };
     const handleSave = () => {
         console.log("Actually saving assignment TBD in later assignments");
         if (assignmentId == "new") {
-            dispatch(addAssignment({... editedAssignment, course: courseId}))
+            handleAddAssignment();
         } else {
-            dispatch(updateAssignment(editedAssignment));
+            handleUpdateAssignment();
         }
         navigate(`/Kanbas/Courses/${courseId}/Assignments`);
     };
