@@ -3,7 +3,10 @@ import Nav from "../Nav";
 import KanbasNavigation from "./KanbasNavigation";
 import Dashboard from "./Dashboard";
 import Courses from "./Courses";
-import db from "./Database";
+import Signin from "./users/signin";
+import Account from "./users/account";
+import UserTable from "./users/table";
+import Signup from "./users/signup";
 import { useEffect, useState } from "react";
 import store from "./store";
 import { Provider } from "react-redux";
@@ -36,7 +39,6 @@ function Kanbas() {
       const response = await axios.delete(
          `${URL}/${courseId}`
       );
-      console.log(`${URL}/${courseId}`);
       setCourses(courses.filter(
          (c) => c._id !== courseId));
    };
@@ -66,7 +68,7 @@ function Kanbas() {
                <div className="main-container flex-grow-1">
                   <Routes>
                      <Route path="/" element={<Navigate to="Dashboard" />} />
-                     <Route path="Account" element={<h1>Account</h1>} />
+                     {/* <Route path="Account" element={<h1>Account</h1>} /> */}
                      <Route path="Dashboard" element={
                         <Dashboard
                            courses={courses}
@@ -78,6 +80,11 @@ function Kanbas() {
                      } />
                      <Route path="Courses/:courseId/*" element={
                         <Courses courses={courses} />} />
+                     <Route path="/signin" element={<Signin />} />
+                     <Route path="/account" element={<Account />} />
+                     <Route path="/account/:id" element={<Account />} />
+                     <Route path="/admin/users" element={<UserTable />} />
+                     <Route path="/signup" element={<Signup />} />
                   </Routes>
                </div>
             </div>
